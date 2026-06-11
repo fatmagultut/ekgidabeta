@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>bebeğim — Ek Gıda Uygulaması</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #fdf7f2; color: #2d1f0e; margin: 0; }
+
+    /* NAV */
+    .nav { background: #fff; border-bottom: 1px solid #e8d9cc; display: flex; align-items: center; justify-content: space-between; padding: 14px 32px; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 20px; font-weight: 700; color: #c05a2e; }
+    .logo span { color: #7bbf7e; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-size: 14px; color: #7a5c44; text-decoration: none; }
+    .nav-links a:hover { color: #c05a2e; }
+    .nav-cta { background: #c05a2e; color: #fff; font-size: 13px; font-weight: 600; padding: 9px 20px; border-radius: 20px; border: none; cursor: pointer; transition: background 0.2s; }
+    .nav-cta:hover { background: #a04a22; }
+
+    /* HERO */
+    .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; padding: 72px 32px 56px; max-width: 960px; margin: 0 auto; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; background: #fde8c8; color: #9a4a18; font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px; margin-bottom: 18px; }
+    h1 { font-size: 36px; font-weight: 800; line-height: 1.25; color: #2d1f0e; margin: 0 0 14px; }
+    h1 em { color: #c05a2e; font-style: normal; }
+    .hero-sub { font-size: 15px; color: #7a5c44; line-height: 1.75; margin-bottom: 28px; }
+
+    /* FORM */
+    .form-wrap { display: flex; flex-direction: column; gap: 10px; }
+    .form-row { display: flex; gap: 8px; }
+    .email-input { flex: 1; padding: 12px 16px; border: 1.5px solid #e0c9b8; border-radius: 12px; font-size: 14px; outline: none; color: #2d1f0e; background: #fff; transition: border-color 0.2s; }
+    .email-input:focus { border-color: #c05a2e; }
+    .submit-btn { background: #c05a2e; color: #fff; font-size: 13px; font-weight: 700; padding: 12px 20px; border-radius: 12px; border: none; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
+    .submit-btn:hover { background: #a04a22; }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .form-note { font-size: 12px; color: #a08060; }
+    .error-msg { color: #c0392b; font-size: 12px; display: none; }
+    .success-box { display: none; background: #edf7ee; border: 1.5px solid #b8deba; border-radius: 12px; padding: 16px; font-size: 14px; font-weight: 600; color: #2e7d32; line-height: 1.55; }
+    .trust-bar { display: flex; gap: 20px; margin-top: 18px; }
+    .trust-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #a08060; }
+    .trust-dot { width: 6px; height: 6px; border-radius: 50%; background: #7bbf7e; }
+
+    /* PHONE MOCKUP */
+    .phone-wrap { display: flex; justify-content: center; }
+    .phone { width: 220px; background: #fff; border-radius: 30px; border: 2.5px solid #e8d9cc; overflow: hidden; box-shadow: 0 8px 32px rgba(192,90,46,0.10); }
+    .phone-notch { background: #2d1f0e; height: 30px; display: flex; align-items: center; justify-content: center; }
+    .phone-notch-pill { width: 64px; height: 10px; background: #1a1108; border-radius: 10px; }
+    .phone-screen { padding: 16px 14px; background: #fdf7f2; }
+    .ps-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .ps-title { font-size: 14px; font-weight: 700; color: #2d1f0e; }
+    .ps-tag { background: #d4edda; color: #1e6b24; font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 8px; }
+    .recipe-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+    .recipe-card { background: #fff; border-radius: 14px; border: 1px solid #ede0d4; overflow: hidden; }
+    .recipe-img { height: 80px; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+    .ri-peach { background: #fde8c8; }
+    .ri-green { background: #d4edda; }
+    .recipe-body { padding: 8px 10px; }
+    .recipe-name { font-size: 11px; font-weight: 700; color: #2d1f0e; }
+    .recipe-meta { font-size: 9px; color: #a08060; margin-top: 2px; }
+    .allergen-bar { background: #fff; border-radius: 10px; border: 1px solid #ede0d4; padding: 9px 12px; display: flex; align-items: center; gap: 8px; }
+    .allergen-bar span { font-size: 11px; font-weight: 700; color: #2d1f0e; }
+    .allergen-bar small { font-size: 9px; color: #a08060; }
+    .phone-bottom { background: #fff; border-top: 1px solid #ede0d4; padding: 10px 16px; display: flex; justify-content: space-around; }
+    .phone-bottom i { font-size: 20px; color: #c05a2e; }
+    .phone-bottom i.muted { color: #c8b0a0; }
+
+    /* FEATURES */
+    .features-section { background: #fff; border-top: 1px solid #e8d9cc; padding: 64px 32px; }
+    .features-inner { max-width: 960px; margin: 0 auto; }
+    .section-label { font-size: 12px; font-weight: 700; letter-spacing: 1.2px; color: #c05a2e; text-transform: uppercase; text-align: center; margin-bottom: 10px; }
+    .section-title { font-size: 28px; font-weight: 800; text-align: center; color: #2d1f0e; margin-bottom: 8px; }
+    .section-sub { font-size: 15px; color: #7a5c44; text-align: center; margin-bottom: 48px; line-height: 1.7; }
+    .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .feat-card { background: #fdf7f2; border: 1.5px solid #e8d9cc; border-radius: 18px; padding: 28px 22px; }
+    .feat-icon { width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px; }
+    .fi-peach { background: #fde8c8; color: #9a4a18; }
+    .fi-green { background: #d4edda; color: #1e6b24; }
+    .fi-blue  { background: #dce8f8; color: #1a4e8a; }
+    .feat-title { font-size: 16px; font-weight: 700; color: #2d1f0e; margin-bottom: 8px; }
+    .feat-desc { font-size: 13px; color: #7a5c44; line-height: 1.7; }
+
+    /* TESTIMONIALS */
+    .testi-section { background: #fdf7f2; border-top: 1px solid #e8d9cc; padding: 64px 32px; }
+    .testi-inner { max-width: 960px; margin: 0 auto; }
+    .testi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px; }
+    .testi-card { background: #fff; border: 1.5px solid #e8d9cc; border-radius: 16px; padding: 22px; }
+    .stars { color: #f4a742; font-size: 14px; margin-bottom: 10px; }
+    .testi-text { font-size: 14px; color: #5a3e2b; line-height: 1.65; font-style: italic; margin-bottom: 14px; }
+    .testi-author { display: flex; align-items: center; gap: 10px; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; }
+    .av-peach { background: #fde8c8; color: #9a4a18; }
+    .av-green { background: #d4edda; color: #1e6b24; }
+    .author-name { font-size: 13px; font-weight: 700; color: #2d1f0e; }
+    .author-role { font-size: 11px; color: #a08060; }
+
+    /* FINAL CTA */
+    .cta-section { background: #c05a2e; padding: 72px 32px; text-align: center; }
+    .cta-title { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 12px; line-height: 1.3; }
+    .cta-sub { font-size: 15px; color: rgba(255,255,255,0.85); margin-bottom: 32px; line-height: 1.7; }
+    .cta-form { display: flex; gap: 10px; max-width: 440px; margin: 0 auto 12px; }
+    .cta-input { flex: 1; padding: 13px 18px; border: none; border-radius: 12px; font-size: 14px; outline: none; color: #2d1f0e; }
+    .cta-btn { background: #2d1f0e; color: #fff; font-size: 14px; font-weight: 700; padding: 13px 22px; border-radius: 12px; border: none; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
+    .cta-btn:hover { background: #1a1108; }
+    .cta-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .cta-note { font-size: 12px; color: rgba(255,255,255,0.65); }
+    .cta-success { display: none; background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.4); border-radius: 12px; padding: 16px 24px; color: #fff; font-size: 15px; font-weight: 600; max-width: 440px; margin: 0 auto; }
+
+    /* FOOTER */
+    footer { background: #2d1f0e; padding: 40px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+    .footer-logo { font-size: 18px; font-weight: 800; color: #f4c78e; }
+    .footer-logo span { color: #7bbf7e; }
+    .footer-copy { font-size: 12px; color: #7a5c44; margin-top: 4px; }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-link { font-size: 13px; color: #7a5c44; cursor: pointer; text-decoration: none; }
+    .footer-link:hover { color: #c8a888; }
+    .social-icons { display: flex; gap: 12px; }
+    .social-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; color: #c8a888; cursor: pointer; transition: background 0.2s; font-size: 18px; }
+    .social-btn:hover { background: rgba(255,255,255,0.18); color: #f4c78e; }
+
+    /* RESPONSIVE */
+    @media (max-width: 700px) {
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 36px 20px; gap: 36px; }
+      .phone-wrap { order: -1; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .testi-grid { grid-template-columns: 1fr; }
+      .cta-form { flex-direction: column; }
+      footer { flex-direction: column; align-items: flex-start; padding: 32px 20px; }
+      h1 { font-size: 26px; }
+      .cta-title { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="logo">bebeğim<span>.</span></div>
+  <div class="nav-links">
+    <a href="#features">Özellikler</a>
+    <a href="#testimonials">Yorumlar</a>
+    <a href="#cta">İletişim</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('hero-email').focus()">Erken Erişim</button>
+</nav>
+
+<!-- HERO -->
+<section style="background:#fdf7f2;">
+  <div class="hero">
+    <div>
+      <div class="badge">✨ Yakında yayında</div>
+      <h1>Ek gıdada ne yapacağını <em>bilmemek</em> artık geride kaldı.</h1>
+      <p class="hero-sub">Pediatristler ve diyetisyenler tarafından hazırlanmış tarifler, ay ay rehber ve kısa videolar — hepsi tek bir uygulamada.</p>
+
+      <div class="form-wrap" id="heroForm">
+        <div class="form-row">
+          <input class="email-input" type="email" id="hero-email" placeholder="ornek@email.com" />
+          <button class="submit-btn" id="hero-btn" onclick="handleSubmit('hero')">İlk Bakan Sen Ol</button>
+        </div>
+        <div class="form-note">Spam yok. İstediğin zaman çıkabilirsin.</div>
+        <div class="error-msg" id="hero-error">Geçerli bir e-posta adresi gir.</div>
+      </div>
+      <div class="success-box" id="hero-success">
+        ✅ Harika! Uygulamamız yayınlandığında sana haber vereceğiz 🥑
+      </div>
+
+      <div class="trust-bar">
+        <div class="trust-item"><div class="trust-dot"></div> Uzman onaylı</div>
+        <div class="trust-item"><div class="trust-dot"></div> Ücretsiz</div>
+        <div class="trust-item"><div class="trust-dot"></div> iOS &amp; Android</div>
+      </div>
+    </div>
+
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="phone-notch"><div class="phone-notch-pill"></div></div>
+        <div class="phone-screen">
+          <div class="ps-header">
+            <div class="ps-title">Bu hafta 🍼</div>
+            <div class="ps-tag">6. ay</div>
+          </div>
+          <div class="recipe-grid">
+            <div class="recipe-card">
+              <div class="recipe-img ri-peach">🥕</div>
+              <div class="recipe-body">
+                <div class="recipe-name">Havuç püresi</div>
+                <div class="recipe-meta">10 dk · Kolay</div>
+              </div>
+            </div>
+            <div class="recipe-card">
+              <div class="recipe-img ri-green">🍎</div>
+              <div class="recipe-body">
+                <div class="recipe-name">Elmalı yulaf</div>
+                <div class="recipe-meta">8 dk · Kolay</div>
+              </div>
+            </div>
+          </div>
+          <div class="allergen-bar">
+            <span>🛡️</span>
+            <div>
+              <span>Alerjen yok</span><br>
+              <small>Bebeğine uygun filtre aktif</small>
+            </div>
+          </div>
+        </div>
+        <div class="phone-bottom">
+          <i class="ti ti-home"></i>
+          <i class="ti ti-video muted"></i>
+          <i class="ti ti-bookmark muted"></i>
+          <i class="ti ti-user muted"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section" id="features">
+  <div class="features-inner">
+    <div class="section-label">Neden bebeğim?</div>
+    <h2 class="section-title">Her şey düşünüldü, sen sadece pişir.</h2>
+    <p class="section-sub">Bebeğinin gelişim dönemine özel içerikler, güvenilir uzmanlar ve akıllı filtreler.</p>
+    <div class="cards-grid">
+      <div class="feat-card">
+        <div class="feat-icon fi-peach">🏅</div>
+        <div class="feat-title">Uzman görüşleri</div>
+        <div class="feat-desc">Pediatristler ve çocuk beslenmesi diyetisyenleri tarafından hazırlanmış, bilimsel dayanaklı içerikler. Her tavsiyenin arkasında bir uzman var.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon fi-green">🛡️</div>
+        <div class="feat-title">Alerji filtresi</div>
+        <div class="feat-desc">Bebeğinin alerjenlerini bir kez gir, sana sadece güvenli tarifleri gösterelim. Her adımda koruma, hiçbir adımda stres.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon fi-blue">▶️</div>
+        <div class="feat-title">Video tarifler</div>
+        <div class="feat-desc">Gerçek mutfaklarda çekilmiş, kısa ve anlaşılır tarif videoları. Okumak yok — sadece izle ve pişir.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi-section" id="testimonials">
+  <div class="testi-inner">
+    <div class="section-label">Anneler anlatıyor</div>
+    <h2 class="section-title">Beta kullanıcıları ne dedi?</h2>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <div class="testi-text">"6. ay geçişi bu kadar kolay olmamıştı. Artık 'bu olur mu?' diye her şeyi aramıyorum."</div>
+        <div class="testi-author">
+          <div class="avatar av-peach">Z</div>
+          <div><div class="author-name">Zeynep A.</div><div class="author-role">7 aylık bebek annesi</div></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <div class="testi-text">"Alerji filtresini çok sevdim. Fıstık alerjisi olan bebeğim için özel tarif listesi çıkartıyor."</div>
+        <div class="testi-author">
+          <div class="avatar av-green">S</div>
+          <div><div class="author-name">Selin M.</div><div class="author-role">10 aylık bebek annesi</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section" id="cta">
+  <h2 class="cta-title">İlk tarifi sen dene. 🍼</h2>
+  <p class="cta-sub">Uygulama çıktığında sana özel erken erişim ve özel içerik seni bekliyor.</p>
+  <div class="cta-form" id="ctaForm">
+    <input class="cta-input" type="email" id="cta-email" placeholder="ornek@email.com" />
+    <button class="cta-btn" id="cta-btn" onclick="handleSubmit('cta')">Beni Listeme Al →</button>
+  </div>
+  <div class="cta-success" id="cta-success">
+    ✅ Harika! Uygulamamız yayınlandığında sana haber vereceğiz 🥑
+  </div>
+  <div class="cta-note" style="margin-top:10px;">Spam yok. İstediğin zaman çıkabilirsin.</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">bebeğim<span>.</span></div>
+    <div class="footer-copy">© 2026 bebeğim. Tüm hakları saklıdır.</div>
+  </div>
+  <div class="footer-links">
+    <a class="footer-link">Gizlilik</a>
+    <a class="footer-link">Kullanım Koşulları</a>
+    <a class="footer-link">İletişim</a>
+  </div>
+  <div class="social-icons">
+    <div class="social-btn" title="Instagram"><i class="ti ti-brand-instagram"></i></div>
+    <div class="social-btn" title="TikTok"><i class="ti ti-brand-tiktok"></i></div>
+    <div class="social-btn" title="Twitter/X"><i class="ti ti-brand-x"></i></div>
+  </div>
+</footer>
+
+<script>
+  // 🔧 Formspree — formspree.io/f/XXXXXXXX adresinden aldığın form ID'sini buraya yapıştır
+  const FORMSPREE_URL = "https://formspree.io/f/mzdqjbwe";
+
+  async function handleSubmit(section) {
+    const emailEl   = document.getElementById(section + '-email');
+    const btnEl     = document.getElementById(section + '-btn');
+    const errorEl   = document.getElementById(section + '-error');
+    const successEl = document.getElementById(section + '-success');
+    const formEl    = section === 'hero' ? document.getElementById('heroForm') : document.getElementById('ctaForm');
+
+    const email = emailEl.value.trim();
+
+    if (errorEl) errorEl.style.display = 'none';
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      emailEl.style.borderColor = '#c0392b';
+      if (errorEl) errorEl.style.display = 'block';
+      setTimeout(() => { emailEl.style.borderColor = ''; }, 1500);
+      return;
+    }
+
+    btnEl.disabled = true;
+    btnEl.textContent = 'Kaydediliyor...';
+
+    try {
+      const res = await fetch(FORMSPREE_URL, {
+        method:  'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email, source: 'landing_' + section })
+      });
+
+      if (res.ok) {
+        formEl.style.display = 'none';
+        successEl.style.display = 'block';
+      } else {
+        throw new Error('Formspree hata döndürdü');
+      }
+    } catch (err) {
+      console.error(err);
+      btnEl.disabled = false;
+      btnEl.textContent = section === 'hero' ? 'İlk Bakan Sen Ol' : 'Beni Listeme Al →';
+      if (errorEl) {
+        errorEl.textContent = 'Bir hata oluştu, lütfen tekrar dene.';
+        errorEl.style.display = 'block';
+      }
+    }
+  }
+
+  // Enter tuşu desteği
+  ['hero-email', 'cta-email'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') handleSubmit(id.split('-')[0]); });
+  });
+</script>
+
+</body>
+</html>
