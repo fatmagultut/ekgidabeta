@@ -597,6 +597,81 @@
 
   :focus-visible{outline:2px solid var(--blueberry);outline-offset:2px;}
 
+  /* ---------- TARİF ARAMA ---------- */
+  .recipe-search-section{
+    background:linear-gradient(135deg,#EEF3E6 0%,#FBF0E8 100%);
+    border-radius:32px;padding:64px 56px;
+  }
+  .rs-top{max-width:560px;margin-bottom:40px;}
+  .rs-top h2{margin-bottom:12px;}
+  .rs-top p{color:var(--ink-soft);font-size:16px;line-height:1.7;}
+
+  .rs-input-row{display:flex;gap:10px;margin-bottom:32px;flex-wrap:wrap;}
+  .rs-input{
+    flex:1;min-width:200px;
+    padding:13px 20px;border-radius:100px;
+    border:1.5px solid var(--line);
+    font-family:var(--body);font-size:14px;
+    background:#fff;color:var(--ink);
+    transition:border-color .2s;
+  }
+  .rs-input:focus{outline:none;border-color:var(--avocado-dark);}
+
+  .rs-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;min-height:32px;}
+  .rs-tag{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(126,155,92,0.15);color:var(--avocado-dark);
+    font-size:13px;font-weight:700;padding:5px 12px;border-radius:100px;
+    cursor:pointer;border:1.5px solid var(--avocado);
+    transition:background .15s;
+  }
+  .rs-tag:hover{background:rgba(126,155,92,0.28);}
+  .rs-tag .x{font-size:11px;opacity:0.7;}
+
+  .rs-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
+  }
+  .rs-card{
+    background:#fff;border-radius:20px;overflow:hidden;
+    border:1.5px solid var(--line);
+    transition:transform .2s,box-shadow .2s,opacity .3s;
+  }
+  .rs-card:hover{transform:translateY(-4px);box-shadow:0 16px 32px -12px rgba(30,43,35,0.15);}
+  .rs-card.hidden{display:none;}
+  .rs-card.dimmed{opacity:0.25;pointer-events:none;}
+  .rs-thumb{
+    height:140px;display:flex;align-items:center;justify-content:center;
+    font-size:48px;position:relative;
+  }
+  .rs-play{
+    position:absolute;bottom:10px;right:10px;
+    width:32px;height:32px;border-radius:50%;
+    background:rgba(30,43,35,0.65);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .rs-play svg{width:14px;height:14px;color:#fff;}
+  .rs-body{padding:14px 16px 18px;}
+  .rs-name{font-size:14px;font-weight:800;margin-bottom:4px;}
+  .rs-meta{font-size:12px;color:var(--ink-soft);margin-bottom:10px;}
+  .rs-chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .rs-chip{
+    font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;
+    background:rgba(126,155,92,0.12);color:var(--avocado-dark);
+  }
+  .rs-empty{
+    grid-column:1/-1;text-align:center;padding:48px;
+    color:var(--ink-soft);font-size:15px;
+  }
+  .rs-empty .icon{font-size:40px;margin-bottom:12px;}
+
+  @media(max-width:900px){
+    .recipe-search-section{padding:48px 24px;}
+    .rs-grid{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:600px){
+    .rs-grid{grid-template-columns:1fr;}
+  }
+
   /* ---------- AI ÖNERI ---------- */
   .ai-section{
     background:linear-gradient(135deg, #EEF3E6 0%, #FBF0E8 100%);
@@ -1005,6 +1080,175 @@
   </div>
 </section>
 
+<!-- TARİF ARAMA -->
+<section id="tarifler">
+  <div class="wrap">
+    <div class="recipe-search-section reveal">
+      <div class="rs-top">
+        <div class="eyebrow"><span class="dot"></span> Evdeki malzemelerle</div>
+        <h2>Ne var evde? Sana tarif bulalım.</h2>
+        <p>Elindeki malzemeleri gir, bebeğine uygun tarifleri anında göster. Hiç malzeme eşleşmezse farklı bir şey dene.</p>
+      </div>
+
+      <div class="rs-input-row">
+        <input class="rs-input" id="rsInput" placeholder="örn. havuç, elma, yulaf…" />
+        <button class="btn btn-primary" onclick="rsAddTag()" style="border-radius:100px;">
+          Ekle
+        </button>
+        <button class="btn btn-ghost" onclick="rsClear()" style="border-radius:100px;">
+          Temizle
+        </button>
+      </div>
+
+      <div class="rs-tags" id="rsTags"></div>
+
+      <div class="rs-grid" id="rsGrid">
+        <div class="rs-card" data-ingredients="havuç,tatlı patates,zencefil">
+          <div class="rs-thumb" style="background:#FDE8C8;">🥕
+            <div class="rs-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="rs-body">
+            <div class="rs-name">Havuç & Tatlı Patates Püresi</div>
+            <div class="rs-meta">Dyt. Elif Karaca · 6+ ay · 10 dk</div>
+            <div class="rs-chips">
+              <span class="rs-chip">havuç</span>
+              <span class="rs-chip">tatlı patates</span>
+              <span class="rs-chip">zencefil</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-card" data-ingredients="avokado,elma,limon">
+          <div class="rs-thumb" style="background:#D4EDDA;">🥑
+            <div class="rs-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="rs-body">
+            <div class="rs-name">Avokado & Elma Püresi</div>
+            <div class="rs-meta">Dyt. Elif Karaca · 6+ ay · 8 dk</div>
+            <div class="rs-chips">
+              <span class="rs-chip">avokado</span>
+              <span class="rs-chip">elma</span>
+              <span class="rs-chip">limon</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-card" data-ingredients="yulaf,elma,tarçın,süt">
+          <div class="rs-thumb" style="background:#F0E6FA;">🌾
+            <div class="rs-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="rs-body">
+            <div class="rs-name">Elmalı Yulaf Lapası</div>
+            <div class="rs-meta">Dr. Deniz Kaya · 6+ ay · 12 dk</div>
+            <div class="rs-chips">
+              <span class="rs-chip">yulaf</span>
+              <span class="rs-chip">elma</span>
+              <span class="rs-chip">tarçın</span>
+              <span class="rs-chip">süt</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-card" data-ingredients="brokoli,patates,zeytinyağı">
+          <div class="rs-thumb" style="background:#E8F5E9;">🥦
+            <div class="rs-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="rs-body">
+            <div class="rs-name">Brokoli & Patates Çorbası</div>
+            <div class="rs-meta">Şef Mert Toprak · 7+ ay · 20 dk</div>
+            <div class="rs-chips">
+              <span class="rs-chip">brokoli</span>
+              <span class="rs-chip">patates</span>
+              <span class="rs-chip">zeytinyağı</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-card" data-ingredients="muz,yoğurt,çilek">
+          <div class="rs-thumb" style="background:#FFF3E0;">🍌
+            <div class="rs-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="rs-body">
+            <div class="rs-name">Muzlu Yoğurt Smoothie</div>
+            <div class="rs-meta">Selin Arslan · 8+ ay · 5 dk</div>
+            <div class="rs-chips">
+              <span class="rs-chip">muz</span>
+              <span class="rs-chip">yoğurt</span>
+              <span class="rs-chip">çilek</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-card" data-ingredients="tavuk,havuç,pirinç,soğan">
+          <div class="rs-thumb" style="background:#FDE8C8;">🍗
+            <div class="rs-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="rs-body">
+            <div class="rs-name">Tavuk & Sebze Çorbası</div>
+            <div class="rs-meta">Dr. Deniz Kaya · 8+ ay · 25 dk</div>
+            <div class="rs-chips">
+              <span class="rs-chip">tavuk</span>
+              <span class="rs-chip">havuç</span>
+              <span class="rs-chip">pirinç</span>
+              <span class="rs-chip">soğan</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-card" data-ingredients="armut,bezelye,nane">
+          <div class="rs-thumb" style="background:#E8F5E9;">🍐
+            <div class="rs-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="rs-body">
+            <div class="rs-name">Armut & Bezelye Püresi</div>
+            <div class="rs-meta">Dyt. Elif Karaca · 6+ ay · 10 dk</div>
+            <div class="rs-chips">
+              <span class="rs-chip">armut</span>
+              <span class="rs-chip">bezelye</span>
+              <span class="rs-chip">nane</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-card" data-ingredients="balkabağı,elma,tarçın">
+          <div class="rs-thumb" style="background:#FFF3E0;">🎃
+            <div class="rs-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="rs-body">
+            <div class="rs-name">Balkabağı & Elma Püresi</div>
+            <div class="rs-meta">Şef Mert Toprak · 6+ ay · 15 dk</div>
+            <div class="rs-chips">
+              <span class="rs-chip">balkabağı</span>
+              <span class="rs-chip">elma</span>
+              <span class="rs-chip">tarçın</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-card" data-ingredients="mercimek,havuç,soğan,zeytinyağı">
+          <div class="rs-thumb" style="background:#FDE8C8;">🫘
+            <div class="rs-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="rs-body">
+            <div class="rs-name">Mercimek Çorbası</div>
+            <div class="rs-meta">Selin Arslan · 8+ ay · 30 dk</div>
+            <div class="rs-chips">
+              <span class="rs-chip">mercimek</span>
+              <span class="rs-chip">havuç</span>
+              <span class="rs-chip">soğan</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-empty" id="rsEmpty" style="display:none;">
+          <div class="icon">🔍</div>
+          <div>Bu malzemelerle eşleşen tarif bulunamadı.<br>Farklı bir malzeme dene.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- EXPERTS -->
 <section id="uzmanlar">
   <div class="wrap">
@@ -1090,6 +1334,50 @@
 
 <script>
   const FORMSPREE_URL = "https://formspree.io/f/mzdqjbwe";
+
+  // --- TARİF ARAMA ---
+  const rsTags = [];
+
+  function rsRenderTags() {
+    const el = document.getElementById('rsTags');
+    el.innerHTML = rsTags.map((t, i) =>
+      `<span class="rs-tag" onclick="rsRemoveTag(${i})">${t} <span class="x">✕</span></span>`
+    ).join('');
+    rsFilter();
+  }
+
+  function rsAddTag() {
+    const input = document.getElementById('rsInput');
+    const val = input.value.trim().toLowerCase().replace(/,/g, '');
+    if (val && !rsTags.includes(val)) { rsTags.push(val); rsRenderTags(); }
+    input.value = '';
+    input.focus();
+  }
+
+  function rsRemoveTag(i) { rsTags.splice(i, 1); rsRenderTags(); }
+
+  function rsClear() { rsTags.length = 0; rsRenderTags(); }
+
+  function rsFilter() {
+    const cards = document.querySelectorAll('#rsGrid .rs-card');
+    const empty = document.getElementById('rsEmpty');
+    let visible = 0;
+    cards.forEach(card => {
+      if (!rsTags.length) { card.classList.remove('hidden','dimmed'); visible++; return; }
+      const cardIngredients = card.dataset.ingredients.split(',');
+      const match = rsTags.some(tag => cardIngredients.some(ci => ci.includes(tag) || tag.includes(ci)));
+      if (match) { card.classList.remove('hidden','dimmed'); visible++; }
+      else { card.classList.add('dimmed'); card.classList.remove('hidden'); }
+    });
+    empty.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const rsInput = document.getElementById('rsInput');
+    if (rsInput) {
+      rsInput.addEventListener('keydown', e => { if (e.key === 'Enter') rsAddTag(); });
+    }
+  });
 
   // --- TAG INPUT ---
   const tags = [];
