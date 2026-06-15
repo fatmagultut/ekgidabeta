@@ -596,6 +596,92 @@
   }
 
   :focus-visible{outline:2px solid var(--blueberry);outline-offset:2px;}
+
+  /* ---------- AI ÖNERI ---------- */
+  .ai-section{
+    background:linear-gradient(135deg, #EEF3E6 0%, #FBF0E8 100%);
+    border-radius:32px;
+    padding:72px 56px;
+  }
+  .ai-inner{
+    display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:flex-start;
+  }
+  .ai-copy h2{margin-bottom:16px;}
+  .ai-copy p{color:var(--ink-soft);font-size:16px;line-height:1.7;margin-bottom:28px;}
+
+  .tag-input-wrap{
+    background:#fff;border:1.5px solid var(--line);
+    border-radius:16px;padding:12px;
+    display:flex;flex-wrap:wrap;gap:8px;
+    cursor:text;transition:border-color .2s;
+    min-height:60px;
+  }
+  .tag-input-wrap:focus-within{border-color:var(--avocado-dark);}
+  .tag{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(126,155,92,0.14);
+    color:var(--avocado-dark);
+    font-size:13px;font-weight:700;
+    padding:5px 10px 5px 12px;border-radius:100px;
+  }
+  .tag-remove{
+    width:16px;height:16px;border-radius:50%;
+    background:rgba(95,120,71,0.2);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;font-size:10px;font-weight:900;color:var(--avocado-dark);
+    flex-shrink:0;
+    border:none;
+  }
+  .tag-remove:hover{background:var(--beet);color:#fff;}
+  #tagInput{
+    border:none;outline:none;font-family:var(--body);font-size:14px;
+    color:var(--ink);background:transparent;
+    flex:1;min-width:120px;padding:4px 6px;
+  }
+  .ai-options{display:flex;gap:16px;margin:16px 0;flex-wrap:wrap;}
+  .ai-select{
+    font-family:var(--body);font-size:13px;font-weight:600;
+    padding:8px 14px;border-radius:100px;
+    border:1.5px solid var(--line);background:#fff;color:var(--ink);
+    cursor:pointer;
+  }
+  .ai-select:focus{outline:2px solid var(--avocado-dark);}
+
+  .ai-result-box{
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:20px;
+    padding:24px;
+    min-height:200px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .ai-result-box.loading{border-color:var(--avocado);animation:pulse 1.5s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+  .ai-placeholder{
+    text-align:center;color:var(--ink-soft);font-size:15px;
+  }
+  .ai-placeholder .icon{font-size:40px;margin-bottom:12px;}
+  .ai-output{
+    font-size:14.5px;line-height:1.75;color:var(--ink);
+    white-space:pre-wrap;width:100%;
+  }
+  .ai-output strong{color:var(--ink);font-weight:800;}
+  .ai-loading{
+    display:flex;flex-direction:column;align-items:center;gap:12px;
+    color:var(--ink-soft);font-size:14px;font-weight:600;
+  }
+  .spinner{
+    width:32px;height:32px;border-radius:50%;
+    border:3px solid var(--line);
+    border-top-color:var(--avocado-dark);
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  @media (max-width:900px){
+    .ai-section{padding:48px 24px;}
+    .ai-inner{grid-template-columns:1fr;gap:36px;}
+  }
 </style>
 </head>
 <body>
@@ -1004,6 +1090,78 @@
 
 <script>
   const FORMSPREE_URL = "https://formspree.io/f/mzdqjbwe";
+
+  // --- TAG INPUT ---
+  const tags = [];
+  const tagInput = document.getElementById('tagInput');
+  const tagContainer = document.getElementById('tagContainer');
+
+  function renderTags() {
+    tagContainer.innerHTML = '';
+    tags.forEach((tag, i) => {
+      const el = document.createElement('span');
+      el.className = 'tag';
+      el.innerHTML = `${tag}<button class="tag-remove" onclick="removeTag(${i})">✕</button>`;
+      tagContainer.appendChild(el);
+    });
+  }
+
+  function removeTag(i) { tags.splice(i, 1); renderTags(); }
+
+  tagInput && tagInput.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ',') && tagInput.value.trim()) {
+      e.preventDefault();
+      const val = tagInput.value.trim().replace(/,$/, '');
+      if (val && !tags.includes(val)) { tags.push(val); renderTags(); }
+      tagInput.value = '';
+    }
+    if (e.key === 'Backspace' && !tagInput.value && tags.length) {
+      tags.pop(); renderTags();
+    }
+  });
+
+  // --- AI ÖNERİ ---
+  async function getSuggestion() {
+    if (!tags.length) {
+      tagInput.focus();
+      document.querySelector('.tag-input-wrap').style.borderColor = 'var(--beet)';
+      setTimeout(() => document.querySelector('.tag-input-wrap').style.borderColor = '', 1500);
+      return;
+    }
+    const btn = document.getElementById('suggestBtn');
+    const box = document.getElementById('resultBox');
+    const age = document.getElementById('babyAge').value;
+    const allergyEl = document.getElementById('allergySelect');
+    const allergies = Array.from(allergyEl.selectedOptions).map(o => o.value);
+
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:2px;"></div> Hazırlanıyor…';
+    box.className = 'ai-result-box loading';
+    box.innerHTML = '<div class="ai-loading"><div class="spinner"></div>Lokmino tarifleri hazırlıyor…</div>';
+
+    try {
+      const res = await fetch('http://localhost:3001/api/suggest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ingredients: tags, age, allergies })
+      });
+      const data = await res.json();
+      if (data.result) {
+        box.className = 'ai-result-box';
+        const html = data.result
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\n/g, '<br>');
+        box.innerHTML = `<div class="ai-output">${html}</div>`;
+      } else {
+        throw new Error();
+      }
+    } catch {
+      box.className = 'ai-result-box';
+      box.innerHTML = '<div class="ai-placeholder"><div class="icon">⚠️</div><div>Bir hata oluştu,<br>lütfen tekrar dene.</div></div>';
+    }
+    btn.disabled = false;
+    btn.innerHTML = 'Tarif Öner <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  }
 
   async function ctaSubmit() {
     const emailEl  = document.getElementById('ctaEmail');
